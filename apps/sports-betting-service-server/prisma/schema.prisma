@@ -1,0 +1,83 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Game {
+  id        String          @id @default(cuid())
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  name      String?
+  date      DateTime?
+  result    EnumGameResult?
+  teamA     String?
+  teamB     String?
+  bets      Bet[]
+}
+
+model Bet {
+  id              String         @id @default(cuid())
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  amount          Float?
+  odds            Float?
+  potentialPayout Float?
+  status          EnumBetStatus?
+  game            Game?          @relation(fields: [gameId], references: [id])
+  gameId          String?
+  user            User?          @relation(fields: [userId], references: [id])
+  userId          String?
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String?
+  country   String?
+}
+
+model Transaction {
+  id        String                    @id @default(cuid())
+  createdAt DateTime                  @default(now())
+  updatedAt DateTime                  @updatedAt
+  amount    Float?
+  typeField EnumTransactionTypeField?
+  status    EnumTransactionStatus?
+  user      User?                     @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model User {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  firstName    String?
+  lastName     String?
+  username     String        @unique
+  email        String?       @unique
+  password     String
+  roles        Json
+  bets         Bet[]
+  transactions Transaction[]
+}
+
+enum EnumGameResult {
+  Option1
+}
+
+enum EnumBetStatus {
+  Option1
+}
+
+enum EnumTransactionTypeField {
+  Option1
+}
+
+enum EnumTransactionStatus {
+  Option1
+}
