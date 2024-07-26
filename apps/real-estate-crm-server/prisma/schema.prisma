@@ -1,0 +1,67 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Property {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  price        Float?
+  description  String?
+  name         String?
+  address      String?
+  appointments Appointment[]
+}
+
+model Client {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  firstName    String?
+  lastName     String?
+  email        String?
+  phoneNumber  String?
+  appointments Appointment[]
+}
+
+model Appointment {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  date       DateTime?
+  time       DateTime?
+  client     Client?   @relation(fields: [clientId], references: [id])
+  clientId   String?
+  property   Property? @relation(fields: [propertyId], references: [id])
+  propertyId String?
+  agent      Agent?    @relation(fields: [agentId], references: [id])
+  agentId    String?
+}
+
+model Agent {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  lastName     String?
+  email        String?
+  firstName    String?
+  phoneNumber  String?
+  appointments Appointment[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  firstName String?
+  lastName  String?
+  username  String   @unique
+  email     String?  @unique
+  password  String
+  roles     Json
+}
